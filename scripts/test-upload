@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+curl   --header "Content-type: application/json"   --request POST   --data '{"url": "https://imgstorev.oss-cn-beijing.aliyuncs.com/00003001ac2eabe0db2039ed650048de1609b5de.jpg"}'   http://localhost:9000/v1/image/upload
+
+
