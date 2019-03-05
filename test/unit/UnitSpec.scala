@@ -1,6 +1,6 @@
 package unit
 
-import controllers.WidgetForm
+import controllers.URLForm
 import org.scalatestplus.play.PlaySpec
 import play.api.data.FormError
 import play.api.i18n._
@@ -14,31 +14,31 @@ import play.api.test._
  */
 class UnitSpec extends PlaySpec {
 
-  "WidgetForm" must {
+  "URLForm" must {
 
     "apply successfully from request" in {
       // The easiest way to test a form is by passing it a fake request.
-      val call = controllers.routes.WidgetController.createWidget()
-      implicit val request: Request[_] = FakeRequest(call).withFormUrlEncodedBody("name" -> "foo", "price" -> "100")
+      val call = controllers.routes.HomeController.createWidget()
+      implicit val request: Request[_] = FakeRequest(call).withFormUrlEncodedBody("url" -> "foo")
       // A successful binding using an implicit request will give you a form with a value.
-      val boundForm = WidgetForm.form.bindFromRequest()
+      val boundForm = URLForm.form.bindFromRequest()
       // You can then get the widget data out and test it.
       val widgetData = boundForm.value.get
 
-      widgetData.name must equal("foo")
-      widgetData.price must equal(100)
+      widgetData.url must equal("foo")
+
     }
 
     "apply successfully from map" in {
       // You can also bind directy from a map, if you don't have a request handy.
-      val data = Map("name" -> "foo", "price" -> "100")
+      val data = Map("url" -> "foo")
       // A successful binding will give you a form with a value.
-      val boundForm = WidgetForm.form.bind(data)
+      val boundForm = URLForm.form.bind(data)
       // You can then get the widget data out and test it.
       val widgetData = boundForm.value.get
 
-      widgetData.name must equal("foo")
-      widgetData.price must equal(100)
+      widgetData.url must equal("foo")
+
     }
 
     "show errors when applied unsuccessfully" in {
@@ -46,7 +46,7 @@ class UnitSpec extends PlaySpec {
       val data = Map("name" -> "foo", "price" -> "-100")
 
       // ...and binding the form will show errors.
-      val errorForm = WidgetForm.form.bind(data)
+      val errorForm = URLForm.form.bind(data)
       // You can then get the widget data out and test it.
       val listOfErrors = errorForm.errors
 

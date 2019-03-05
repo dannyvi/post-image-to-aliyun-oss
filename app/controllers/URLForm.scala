@@ -1,6 +1,6 @@
 package controllers
 
-object WidgetForm {
+object URLForm {
   import play.api.data.Forms._
   import play.api.data.Form
 
@@ -13,7 +13,7 @@ object WidgetForm {
   case class Data(url: List[String])
 
   /**
-   * The form definition for the "create a widget" form.
+   * The form definition for the "upload images" form.
    * It specifies the form fields and their types,
    * as well as how to convert from a Data to form data and vice versa.
    */
