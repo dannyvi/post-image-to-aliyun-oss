@@ -23,7 +23,7 @@ import play.api.Logger
 
 class WidgetController @Inject()(cc: MessagesControllerComponents) extends MessagesAbstractController(cc) {
   import WidgetForm._
-  val logger: Logger = Logger(this.getClass())
+  val logger: Logger = Logger(this.getClass)
 
   private val widgets = scala.collection.mutable.ArrayBuffer(
     Widget("Widget 1"),
@@ -35,10 +35,6 @@ class WidgetController @Inject()(cc: MessagesControllerComponents) extends Messa
   // can be more convenient to leave the template completely stateless i.e. all
   // of the "WidgetController" references are inside the .scala file.
   private val postUrl = routes.WidgetController.createWidget()
-
-  //def index = Action {
-  //  Ok(views.html.index())
-  // }
 
   def index = Action { implicit request: MessagesRequest[AnyContent] =>
     // Pass an unpopulated form to the template
@@ -66,12 +62,9 @@ class WidgetController @Inject()(cc: MessagesControllerComponents) extends Messa
       import java.net.URL
       import java.util.UUID.randomUUID
 
-      //val address = data.url(0)
-      val jobid = randomUUID().toString
+      val jobId = randomUUID().toString
       println(data.url)
-      println(jobid)
-      //println(img.getHeight())
-      //println(sys.env("TEST_VAR"))
+      println(jobId)
 
       import com.aliyun.oss.OSSClient
       import java.io.InputStream
@@ -99,7 +92,7 @@ class WidgetController @Inject()(cc: MessagesControllerComponents) extends Messa
       }
 
       Ok(Json.toJson(
-        Map("jobid" -> jobid)
+        Map("jobId" -> jobId)
       ))
     }
 
