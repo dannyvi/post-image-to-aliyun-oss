@@ -30,6 +30,29 @@ curl   --header "Content-type: application/json"   --request POST   --data
   http://localhost:9000/v1/image/upload
 ```
 
+##Request
+
+    POST /v1/image/upload
+
+The request is just a JSON body, no query parameters.
+
+## Request body
+
+Attributes:
+
+- urls: An array of URLs to images that will be uploaded.
+
+Example request body:
+
+```json
+{
+    "urls": [
+        "https://example.com/pic1.jpg",
+        "https://example.com/pic2.jpg"
+    ]
+}
+```
+
 You require data via only one url available. `http://localhost:9000/v1/image/upload` 
 
  `UploadController` method `process` take a post request of url list,
