@@ -30,8 +30,6 @@ class UploadController @Inject() (val controllerComponents: ControllerComponents
   def process = Action {implicit request =>
 
     val errorFunction = { formWithErrors: Form[URLForm.Data] =>
-      // This is the bad case, where the form had validation errors.
-      // Note how we pass the form with errors to the template.
       BadRequest
     }
 
@@ -72,6 +70,5 @@ class UploadController @Inject() (val controllerComponents: ControllerComponents
 
     val formValidationResult = URLForm.form.bindFromRequest
     formValidationResult.fold(errorFunction, successFunction)
-
   }
 }

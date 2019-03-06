@@ -23,6 +23,11 @@ Start the Play app:
 sbt run
 ```
 
-And open [http://localhost:9000/](http://localhost:9000/)
+Then the server works on [http://localhost:9000/](http://localhost:9000/), you can test with:
 
-
+```bash
+curl   --header "Content-type: application/json"   --request POST   --data
+ '{"url": ["https://imgstorev.oss-cn-beijing.aliyuncs.com/00003001ac2eabe0db2039ed650048de1609b5de.jpg",
+  "https://imgstorev.oss-cn-beijing.aliyuncs.com/0002a56498c539e7360526a615ffb3147603b7de.png"]}'   
+  http://localhost:9000/v1/image/upload
+```
