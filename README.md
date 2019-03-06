@@ -1,8 +1,6 @@
 # post-image-to-aliyun-oss
 
-
-
-This example shows form processing and form helper handling under Play 2.6.x.
+This example shows download files from post requests of url list and upload to Aliyun OSS buckets. 
 
 ## How to run
 
@@ -31,3 +29,16 @@ curl   --header "Content-type: application/json"   --request POST   --data
   "https://imgstorev.oss-cn-beijing.aliyuncs.com/0002a56498c539e7360526a615ffb3147603b7de.png"]}'   
   http://localhost:9000/v1/image/upload
 ```
+
+You require data via only one url available. `http://localhost:9000/v1/image/upload` 
+
+ `UploadController` method `process` take a post request of url list,
+ generate a jobid and send a Response. 
+ 
+ Before the procedure returns the Response, it sends an async proc for each url in the request list.
+ `AuthClient.transfer`Download file from the url as an inputStream.
+  It gives a filename of 40 alphanumeric plus `.jpg` as postfix.
+ Then auth to oss and putObject to the oss bucket.
+If any picture fails to be pushed, it gives a logger error to the screen on the backend.
+ 
+ 

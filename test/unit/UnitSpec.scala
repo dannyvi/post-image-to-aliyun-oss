@@ -1,90 +1,47 @@
 package unit
 
-import org.scalatestplus.play.PlaySpec
-import play.api.data.FormError
-import play.api.i18n._
+import akka.stream.Materializer
+import org.scalatestplus.play._
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.libs.json.Json
+import play.api.mvc.Results._
 import play.api.mvc._
+import play.api.test.Helpers._
 import play.api.test._
+import v1.image.UploadController
 
-/**
- * Unit tests that do not require a running Play application.
- *
- * This is useful for testing forms and constraints.
- */
-class UnitSpec extends PlaySpec {
+import scala.concurrent.Future
 
-  "URLForm" must {
 
-    "apply successfully from request" in {
-      // The easiest way to test a form is by passing it a fake request.
-      val call = controllers.routes.HomeController.createWidget()
-      implicit val request: Request[_] = FakeRequest(call).withFormUrlEncodedBody("url" -> "foo")
-      // A successful binding using an implicit request will give you a form with a value.
-      val boundForm = URLForm.form.bindFromRequest()
-      // You can then get the widget data out and test it.
-      val widgetData = boundForm.value.get
+class UnitSpec extends PlaySpec with GuiceOneAppPerSuite {
 
-      widgetData.url must equal("foo")
+  implicit lazy val materializer: Materializer = app.materializer
+  implicit lazy val Action = app.injector.instanceOf(classOf[DefaultActionBuilder])
 
+
+  "UploadController#process" should {
+    "should be valid" in {
+      val controller = new UploadController(Helpers.stubControllerComponents())
+      val request = FakeRequest("POST", "/v1/image/upload").withJsonBody(Json.parse(
+        """{"url": ["https://imgstorev.oss-cn-beijing.aliyuncs.com/00003001ac2eabe0db2039ed650048de1609b5de.jpg", "https://imgstorev.oss-cn-beijing.aliyuncs.com/0002a56498c539e7360526a615ffb3147603b7de.png"]}"""))
+      val apiResult: Future[Result] = call(controller.process, request)
+      status(apiResult) mustEqual OK
+      contentAsString(apiResult) must include("jobId")
     }
-
-    "apply successfully from map" in {
-      // You can also bind directy from a map, if you don't have a request handy.
-      val data = Map("url" -> "foo")
-      // A successful binding will give you a form with a value.
-      val boundForm = URLForm.form.bind(data)
-      // You can then get the widget data out and test it.
-      val widgetData = boundForm.value.get
-
-      widgetData.url must equal("foo")
-
-    }
-
-    "show errors when applied unsuccessfully" in {
-      // Pass in a negative price that fails the constraints...
-      val data = Map("name" -> "foo", "price" -> "-100")
-
-      // ...and binding the form will show errors.
-      val errorForm = URLForm.form.bind(data)
-      // You can then get the widget data out and test it.
-      val listOfErrors = errorForm.errors
-
-      // Note that the FormError's key is the field it was bound to.
-      // If there is no key, then it is a "global error".
-      val formError: FormError = listOfErrors.head
-      formError.key must equal("price")
-
-      // In this case, we don't have any global errors -- they're caused
-      // when a constraint on the form itself fails.
-      errorForm.hasGlobalErrors mustBe false
-
-      // The message is in the language that was "preferred" by the request's Messages
-      // component.  The closest messages file i.e. messages.en is looked up, and then
-      // the constraint key ("error.min") is looked up.  If there is no user defined
-      // mapping, then the default messages file is "messages.default", which has
-      //
-      // error.min=Must be greater or equal to {0}
-      //
-      // but in this case, we haven't passed in a request, because we called bind instead of bindFromRequest!
-      //
-      // As such, when there is nothing in scope, the error message is the key itself.
-      formError.message must equal("error.min")
-
-      // You get the content of the message by calling Messages(key, args) with an in scope MessagesProvider.
-      //
-      // Usually you'll do this through dependency injection with
-      // app.inject[MessagesApi] and messageApi.preferred(request), but we can
-      // do it by hand here just to demonstrate what happens underneath the hood:
-      val lang: Lang = Lang.defaultLang
-      val messagesApi: MessagesApi = new DefaultMessagesApi(Map(lang.code -> Map("error.min" -> "Must be greater or equal to {0}")))
-      val messagesProvider: MessagesProvider = messagesApi.preferred(Seq(lang))
-      val message: String = Messages(formError.message, formError.args: _*)(messagesProvider)
-
-      // And the message will be run through with the arguments:
-      message must equal("Must be greater or equal to 0")
-    }
-
   }
 
+  "An essential action" should {
+    "can parse a JSON body" in {
+      val action: EssentialAction = Action { request =>
+        val value = (request.body.asJson.get \ "url").as[List[String]].mkString(" ")
+        Ok(value)
+      }
+      val request = FakeRequest(POST, "/v1/image/upload").withJsonBody(Json.parse("""{"url": ["https://imgstorev.oss-cn-beijing.aliyuncs.com/00003001ac2eabe0db2039ed650048de1609b5de.jpg", "https://imgstorev.oss-cn-beijing.aliyuncs.com/0002a56498c539e7360526a615ffb3147603b7de.png"]}"""))
+      val result = call(action, request)
+      status(result) mustEqual OK
+      contentAsString(result) mustEqual "https://imgstorev.oss-cn-beijing.aliyuncs.com/00003001ac2eabe0db2039ed650048de1609b5de.jpg https://imgstorev.oss-cn-beijing.aliyuncs.com/0002a56498c539e7360526a615ffb3147603b7de.png"
+    }
+  }
 
 }
+
