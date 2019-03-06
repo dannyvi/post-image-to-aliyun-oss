@@ -9,7 +9,6 @@ import play.api.routing.sird._
 class UploadRouter @Inject() (controller: UploadController) extends SimpleRouter {
   val prefix = "/v1/image"
 
-  //def link(id: ImageId)
   override def routes: Routes = {
     case POST(p"/upload") => controller.process
   }
