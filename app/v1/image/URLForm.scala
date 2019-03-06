@@ -9,7 +9,7 @@ object URLForm {
 
   val form = Form(
     mapping(
-      "url" -> list(nonEmptyText),
+      "urls" -> list(nonEmptyText),
     )(Data.apply)(Data.unapply)
   )
 
