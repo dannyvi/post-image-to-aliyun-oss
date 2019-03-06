@@ -8,6 +8,8 @@ import play.api.mvc._
 import play.api.libs.json._
 import play.api.Logger
 
+import v1.image
+
 /**
  * The classic HomeController using MessagesAbstractController.
  *
@@ -28,6 +30,8 @@ class HomeController @Inject()(cc: MessagesControllerComponents) extends Message
   // can be more convenient to leave the template completely stateless i.e. all
   // of the "HomeController" references are inside the .scala file.
   private val postUrl = routes.HomeController.createWidget()
+
+  //val pUrl = v1.image.UploadRouter.routes
 
   def index = Action { implicit request: MessagesRequest[AnyContent] =>
     // Pass an unpopulated form to the template

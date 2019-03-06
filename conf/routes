@@ -6,7 +6,7 @@
 GET     /                           controllers.HomeController.index
 
 # upload image via POST
-
+->      /v1/image                   v1.image.UploadRouter
 POST    /v1/image/upload                    controllers.HomeController.createWidget
 
 # Map static resources from the /public folder to the /assets URL path
